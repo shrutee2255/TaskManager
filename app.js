@@ -39,9 +39,9 @@ app.use(errorHandlerMiddleware);
 
 const option={
   key:fs.readFileSync('./certs/key.pem'),
-  certs:fs.readFileSync('./certs/certs.pem'),
+  certs:fs.readFileSync('./certs/cert.pem'),
 
-  resumesession(sessionid,callback){
+ resumeSession(sessionid,callback){
     const session = tlsSessionCache.get(sessionid.toString('hex'));
     callback(null,session)
   }
@@ -49,7 +49,7 @@ const option={
 }
 const server = https.createServer(option,app);
 
-server.on('newSession',(sessionid,sessindata,callback)=>{
+server.on('newSession',(sessionid,sessiondata,callback)=>{
   try{
     tlsSessionCache.set(sessionid.toString('hex'),sessiondata);
   }
@@ -66,7 +66,7 @@ const port = process.env.PORT || 5000;
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URI)
-    console.log(process.env.MONGO_URI)
+    
     server.listen(port, () =>
       console.log(`Server is listening on port ${port}...`)
     );
